@@ -19,7 +19,6 @@ int main(){
     int x;
     scanf("%d", &x);
     printf("%lld\n", dp(x));
-    // for(int i = 0 ; i <= x; i++)
-    //     printf("%lld\n", d[i][0]);
+    // for(int if("%lld\n", d[i][0]);
     return 0;
 }

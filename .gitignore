@@ -1,0 +1,12 @@
+*.exe
+.vscode
+.vs
+/c++
+/codingTest
+*.iml
+*.xml
+/programers/silliconValley
+/programers/skill_check
+/programers/etc
+boj/tempCodeRunnerFile.cpp
+boj/dp/tempCodeRunnerFile.cpp

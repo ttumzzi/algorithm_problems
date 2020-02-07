@@ -36,5 +36,4 @@ int main(){
     res = (inv[n-k] * inv[k])%mod;
     res = (res * factorial[n])%mod;
     printf("%lld\n", res);
-    
 }
