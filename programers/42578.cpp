@@ -15,9 +15,7 @@ int solution(vector<vector<string>> clothes)
     }
 
     for (auto it = m.begin(); it != m.end(); it++)
-    {
         answer *= (it->second + 1);
-    }
 
     return answer - 1;
 }
