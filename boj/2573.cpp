@@ -4,6 +4,8 @@
 #include <string.h>
 using namespace std;
 
+//코드 정리해서 다시 풀기
+
 int map1[301][301];
 int map2[301][301];
 int visit[301][301];
