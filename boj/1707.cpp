@@ -5,55 +5,28 @@
 #include <queue>
 using namespace std;
 
-struct node
-{
-    int idx;
-    bool flag;
-};
-
 int visit[20001];
 map<int, vector<int>> m;
 
-bool check(int x, vector<int> v)
-{
-    for (auto k : v)
-        for (auto l : m[k])
-            if (l == x)
-                return false;
-    return true;
-}
-
 bool bfs(int n)
 {
-    queue<node> q;
+    queue<int> q;
     vector<int> v1, v2;
-    q.push({n, 0});
+    q.push(n);
     visit[n] = 1;
     while (!q.empty())
     {
-        int x = q.front().idx, flag = q.front().flag;
-        if (flag)
-        {
-            if (check(x, v1))
-                v1.push_back(x);
-            else
-                return false;
-        }
-        else
-        {
-            if (check(x, v2))
-                v2.push_back(x);
-            else
-                return false;
-        }
+        int x = q.front();
         q.pop();
         for (auto k : m[x])
         {
             if (!visit[k])
             {
-                q.push({k, !flag});
-                visit[k] = 1;
+                q.push(k);
+                visit[k] = -visit[x];
             }
+            else if (visit[k] == visit[x])
+                return false;
         }
     }
     return true;
@@ -78,7 +51,7 @@ int main()
         bool flag = false;
         for (int i = 1; i <= v; i++)
         {
-            if (!visit[i])
+            if (!visit[i] && !m[i].empty())
             {
                 if (!bfs(i))
                 {
