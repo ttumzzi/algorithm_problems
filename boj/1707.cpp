@@ -1,19 +1,17 @@
 #include <iostream>
-#include <map>
-#include <vector>
-#include <string.h>
 #include <queue>
+#include <map>
+#include <string.h>
 using namespace std;
 
-int visit[20001];
 map<int, vector<int>> m;
+int visit[20001];
 
-bool bfs(int n)
+bool bfs(int i)
 {
     queue<int> q;
-    vector<int> v1, v2;
-    q.push(n);
-    visit[n] = 1;
+    q.push(i);
+    visit[i] = 1;
     while (!q.empty())
     {
         int x = q.front();
@@ -38,28 +36,25 @@ int main()
     cin >> t;
     while (t--)
     {
-        cin >> v >> e;
         m.clear();
         memset(visit, 0, sizeof(visit));
+        cin >> v >> e;
         while (e--)
         {
-            int x, y;
-            cin >> x >> y;
-            m[x].push_back(y);
-            m[y].push_back(x);
+            int a, b;
+            cin >> a >> b;
+            m[a].push_back(b);
+            m[b].push_back(a);
         }
-        bool flag = false;
+        bool flag = true;
         for (int i = 1; i <= v; i++)
         {
-            if (!visit[i] && !m[i].empty())
+            if (!m[i].empty() && !visit[i] && !bfs(i))
             {
-                if (!bfs(i))
-                {
-                    flag = true;
-                    break;
-                }
+                flag = false;
+                break;
             }
         }
-        cout << (flag ? "NO" : "YES") << endl;
+        cout << (flag ? "YES" : "NO") << endl;
     }
 }
