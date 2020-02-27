@@ -3,78 +3,62 @@
 #include <queue>
 using namespace std;
 
-bool visit[10001];
-char word[4] = {'D', 'S', 'L', 'R'};
-
-struct digit {
-    int d1, d2, d3, d4;
+struct node {
+    int x;
+    string seq;
 };
+bool visit[10000];
+char command[4] = {'D', 'S', 'L', 'R'};
 
-struct pos {
-    int number;
-    string route;
-};
-
-int getNumber(digit num) {
-    return num.d1 * 1000 + num.d2 * 100 + num.d3 * 10 + num.d4;
-}
-
-int leftTurn(int num) {
+int turn(int n, char direction) {
     int d[4];
     for (int i = 3; i >= 0; i--) {
-        d[i] = num % 10;
-        num /= 10;
+        d[i] = n % 10;
+        n /= 10;
     }
-    return getNumber({d[1], d[2], d[3], d[0]});
+    int tmp;
+    if (direction == 'L') {
+        return d[1] * 1000 + d[2] * 100 + d[3] * 10 + d[0];
+    } else {
+        return d[3] * 1000 + d[0] * 100 + d[1] * 10 + d[2];
+    }
 }
 
-int rightTurn(int num) {
-    int d[4];
-    for (int i = 3; i >= 0; i--) {
-        d[i] = num % 10;
-        num /= 10;
-    }
-    return getNumber({d[3], d[0], d[1], d[2]});
-}
-
-void bfs(int start, int end) {
-    queue<pos> q;
-    q.push({start, {}});
+string bfs(int start, int end) {
+    queue<node> q;
+    q.push({start, ""});
     visit[start] = true;
-
     while (!q.empty()) {
-        int x = q.front().number;
-        string route = q.front().route;
+        int x = q.front().x;
+        string seq = q.front().seq;
         if (x == end) {
-            for (auto k : route) cout << k;
-            cout << endl;
-            return;
+            return seq;
         }
         q.pop();
-        int tmp[4];
-        tmp[0] = (2 * x) % 10000;
-        tmp[1] = x == 0 ? 9999 : (x - 1);
-        tmp[2] = leftTurn(x);
-        tmp[3] = rightTurn(x);
         for (int i = 0; i < 4; i++) {
-            if (!visit[tmp[i]]) {
-                route += word[i];
-                q.push({tmp[i], route});
-                visit[tmp[i]] = true;
-                route.pop_back();
-            }
+            int nx;
+            if (i == 0)
+                nx = (x * 2) % 10000;
+            else if (i == 1)
+                nx = x == 0 ? 9999 : (x - 1);
+            else if (i == 2)
+                nx = turn(x, 'L');
+            else if (i == 3)
+                nx = turn(x, 'R');
+            if (visit[nx]) continue;
+            q.push({nx, seq + command[i]});
+            visit[nx] = true;
         }
     }
 }
 
 int main() {
     int t;
+    int start, end;
     cin >> t;
     while (t--) {
-        int start, end;
         cin >> start >> end;
-
         memset(visit, 0, sizeof(visit));
-        bfs(start, end);
+        cout << bfs(start, end) << endl;
     }
 }
