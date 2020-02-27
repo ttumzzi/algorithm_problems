@@ -1,91 +1,83 @@
+#include <string.h>
 #include <iostream>
 #include <queue>
 #include <vector>
-#include <string.h>
 using namespace std;
 
-struct node
-{
+struct node {
     int x, y;
 };
 
-int n, m, wallNum = 3;
-int map[8][8], visit[8][8];
+int map[8][8];
+bool walls[64], visit[8][8];
+int n, m, possibleSafeArea, answer = -1;
 int dx[4] = {0, 1, 0, -1}, dy[4] = {1, 0, -1, 0};
-int answer = -1;
-vector<node> virus;
+vector<node> initVirus;
 
-node getNode(int num)
-{
-    return {num / m, num % m};
-}
-
-void bfs()
-{
-    int virNum = 0;
-    memset(visit, 0, sizeof(visit));
+void bfs() {
+    int safeArea = possibleSafeArea;
     queue<node> q;
-    for (auto k : virus)
-    {
+    memset(visit, 0, sizeof(visit));
+    for (auto k : initVirus) {
         q.push(k);
-        visit[k.x][k.y] = 1;
+        visit[k.x][k.y] = true;
     }
-    while (!q.empty())
-    {
+    while (!q.empty()) {
         int x = q.front().x, y = q.front().y;
         q.pop();
-        virNum++;
-        for (int i = 0; i < 4; i++)
-        {
+        safeArea--;
+        for (int i = 0; i < 4; i++) {
             int nx = x + dx[i], ny = y + dy[i];
-            if (nx < 0 || nx >= n || ny < 0 || ny >= m)
-                continue;
-            if (map[nx][ny] || visit[nx][ny])
-                continue;
+            if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+            if (map[nx][ny] == 1 || visit[nx][ny]) continue;
             q.push({nx, ny});
             visit[nx][ny] = true;
         }
     }
-    int safeNum = m * n - virNum - wallNum;
-    answer = safeNum > answer ? safeNum : answer;
+    if (safeArea > answer) answer = safeArea;
 }
 
-void makeWall(int num, vector<int> v)
-{
+node getNode(int num) {
+    return {num / m, num % m};
+}
 
-    node curNode = getNode(num);
-    if (v.size() >= 3)
-    {
-        for (auto k : v)
-            map[getNode(k).x][getNode(k).y] = 1;
+void makeWalls(int idx, int level) {
+    node no = getNode(idx);
+    if (level == 3) {
+        for (int i = 0; i < n * m; i++)
+            if (walls[i]) {
+                node newWall = getNode(i);
+                map[newWall.x][newWall.y] = 1;
+            }
         bfs();
-        for (auto k : v)
-            map[getNode(k).x][getNode(k).y] = 0;
+        for (int i = 0; i < n * m; i++)
+            if (walls[i]) {
+                node newWall = getNode(i);
+                map[newWall.x][newWall.y] = 0;
+            }
         return;
     }
-    if (num == n * m)
-        return;
-    makeWall(num + 1, v);
-    if (!map[curNode.x][curNode.y])
-    {
-        v.push_back(num);
-        makeWall(num + 1, v);
+    if (idx >= n * m) return;
+    if (!map[no.x][no.y]) {
+        walls[idx] = true;
+        makeWalls(idx + 1, level + 1);
     }
+    walls[idx] = false;
+    makeWalls(idx + 1, level);
 }
 
-int main()
-{
-    cin >> n >> m;
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < m; j++)
-        {
-            cin >> map[i][j];
-            if (map[i][j] == 2)
-                virus.push_back({i, j});
-            if (map[i][j] == 1)
-                wallNum++;
-        }
+int main() {
+    scanf("%d %d", &n, &m);
+    possibleSafeArea = n * m - 3;
 
-    makeWall(0, {});
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++) {
+            scanf("%d", &map[i][j]);
+            if (map[i][j] == 1)
+                possibleSafeArea--;
+            else if (map[i][j] == 2)
+                initVirus.push_back({i, j});
+        }
+    makeWalls(0, 0);
     cout << answer << endl;
 }
