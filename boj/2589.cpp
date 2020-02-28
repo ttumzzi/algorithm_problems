@@ -1,65 +1,53 @@
+#include <string.h>
+#include <algorithm>
 #include <iostream>
 #include <queue>
-#include <vector>
-#include <algorithm>
-#include <string.h>
 using namespace std;
 
-struct pos
-{
+struct node {
     int x, y;
 };
-
-int map[51][51];
-int visit[51][51];
+int map[50][50], visit[50][50];
+int n, m, answer = -1;
 int dx[4] = {0, 1, 0, -1}, dy[4] = {1, 0, -1, 0};
-int n, m;
 
-int bfs(pos start)
-{
-    queue<pos> q;
-    int maximum = -1;
+int bfs(node init) {
+    queue<node> q;
     memset(visit, 0, sizeof(visit));
-    q.push({start.x, start.y});
-    visit[start.x][start.y] = 1;
-    while (!q.empty())
-    {
-        int x = q.front().x, y = q.front().y;
-        maximum = max(maximum, visit[x][y]);
+    int maxDist = 0;
+    q.push(init);
+    visit[init.x][init.y] = 1;
+    while (!q.empty()) {
+        int x = q.front().x, y = q.front().y, dist = visit[x][y];
         q.pop();
-        for (int i = 0; i < 4; i++)
-        {
+        if (dist > maxDist) maxDist = dist;
+        for (int i = 0; i < 4; i++) {
             int nx = x + dx[i], ny = y + dy[i];
-            if (nx < 0 || nx >= n || ny < 0 || ny >= m)
-                continue;
-            if (!map[nx][ny] || visit[nx][ny])
-                continue;
+            if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+            if (map[nx][ny] == 0 || visit[nx][ny]) continue;
             q.push({nx, ny});
-            visit[nx][ny] = visit[x][y] + 1;
+            visit[nx][ny] = dist + 1;
         }
     }
-    return maximum - 1;
+    return maxDist - 1;
 }
 
-int main()
-{
-    vector<pos> v;
-    int answer = -1;
+int main() {
     cin >> n >> m;
-    for (int i = 0; i < n; i++)
-    {
-        string line;
+    string line;
+    for (int i = 0; i < n; i++) {
         cin >> line;
         for (int j = 0; j < m; j++)
-            map[i][j] = line[j] == 'L' ? 1 : 0;
+            map[i][j] = line[j] == 'W' ? 0 : 1;
     }
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < m; j++)
-        {
-            if (map[i][j])
-                answer = max(answer, bfs({i, j}));
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (map[i][j]) {
+                answer = max(bfs({i, j}), answer);
+            }
         }
     }
+
     cout << answer << endl;
 }
