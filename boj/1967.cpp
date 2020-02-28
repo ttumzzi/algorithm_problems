@@ -1,5 +1,4 @@
 #include <string.h>
-#include <algorithm>
 #include <iostream>
 #include <map>
 #include <vector>
@@ -8,33 +7,31 @@ using namespace std;
 struct node {
     int x, weight;
 };
-
+int nodeNum;
+int visit[10001];
 map<int, vector<node>> m;
-bool visit[10001];
 node maxVal = {0, -1};
 
-void dfs(int x, int w) {
-    if (w >= maxVal.weight) maxVal = {x, w};
-    for (auto elem : m[x]) {
-        if (visit[elem.x]) continue;
-        visit[elem.x] = true;
-        dfs(elem.x, w + elem.weight);
+void dfs(int idx, int weight) {
+    visit[idx] = true;
+    if (weight > maxVal.weight) maxVal = {idx, weight};
+    for (auto elem : m[idx]) {
+        if (!visit[elem.x]) {
+            dfs(elem.x, weight + elem.weight);
+        }
     }
 }
 
 int main() {
-    int n, parent, child, weight;
-    cin >> n;
-    for (int i = 0; i < n - 1; i++) {
+    cin >> nodeNum;
+    int parent, child, weight;
+    for (int i = 0; i < nodeNum - 1; i++) {
         cin >> parent >> child >> weight;
         m[parent].push_back({child, weight});
         m[child].push_back({parent, weight});
     }
-
-    visit[1] = true;
     dfs(1, 0);
     memset(visit, 0, sizeof(visit));
-    visit[maxVal.x] = true;
     dfs(maxVal.x, 0);
     cout << maxVal.weight << endl;
 }
