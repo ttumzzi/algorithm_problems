@@ -11,16 +11,16 @@ char map[12][6];
 bool visit[12][6];
 int dx[4] = {0, 1, 0, -1}, dy[4] = {1, 0, -1, 0};
 
-void removeEmpty() {
+void gravity() {
     for (int i = 0; i < 6; i++) {
-        int idx = 11;
+        int idx = 12;
         for (int j = 11; j >= 0; j--) {
             if (map[j][i] == '.')
                 continue;
-            map[idx][i] = map[j][i];
-            if (idx != j)
-                map[j][i] = '.';
             idx--;
+            if (j == idx) continue;
+            map[idx][i] = map[j][i];
+            map[j][i] = '.';
         }
     }
 }
@@ -28,14 +28,12 @@ void removeEmpty() {
 bool bfs(node no) {
     queue<node> q;
     vector<node> v;
-
-    q.push(no);
+    q.push({no.x, no.y});
     visit[no.x][no.y] = true;
-
     while (!q.empty()) {
         int x = q.front().x, y = q.front().y;
-        v.push_back(q.front());
         q.pop();
+        v.push_back({x, y});
         for (int i = 0; i < 4; i++) {
             int nx = x + dx[i], ny = y + dy[i];
             if (nx < 0 || nx >= 12 || ny < 0 || ny >= 6) continue;
@@ -54,6 +52,8 @@ bool bfs(node no) {
 }
 
 int main() {
+    int answer = 0;
+
     for (int i = 0; i < 12; i++) {
         string line;
         cin >> line;
@@ -61,22 +61,21 @@ int main() {
             map[i][j] = line[j];
     }
 
-    int concat = 0;
     while (true) {
         memset(visit, 0, sizeof(visit));
         int cnt = 0;
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 6; j++) {
-                if (map[i][j] != '.' && !visit[i][j]) {
+                if (map[i][j] != '.' && !visit[i][j])
                     if (bfs({i, j})) cnt++;
-                }
             }
         }
         if (cnt == 0) {
-            printf("%d\n", concat);
+            cout << answer << endl;
             return 0;
         }
-        removeEmpty();
-        concat++;
+
+        answer++;
+        gravity();
     }
 }
