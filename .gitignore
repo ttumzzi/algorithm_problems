@@ -1,7 +1,7 @@
 *.exe
 .vscode
 .vs
-/c++
+/c++/prim_algorithm
 /codingTest
 *.iml
 *.xml
