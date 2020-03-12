@@ -14,7 +14,7 @@ int main() {
     int t, n;
     cin >> t;
     while (t--) {
-        cin >> n;
-        cout << d[n][0] << ' ' << d[n][1] << endl;
+        scanf("%d", &n);
+        printf("%d %d\n", d[n][0], d[n][1]);
     }
 }
